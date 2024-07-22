@@ -51,14 +51,14 @@ until PGPASSWORD=$POSTGRES_PASSWORD psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER"
 done
 
 # apply migrations to the database
-echo "Applying migrations to the database..."
-npx prisma migrate deploy
-echo "Migrations applied successfully!"
+#echo "Applying migrations to the database..."
+#npx prisma migrate deploy
+#echo "Migrations applied successfully!"
 
 # seed the database
-echo "Seeding the database..."
-npx prisma db seed
-echo "Database seeded successfully!"
+#echo "Seeding the database..."
+#npx prisma db seed
+#echo "Database seeded successfully!"
 
 echo "Executing command"
 exec $cmd
