@@ -26,7 +26,9 @@ interface IProps {
 }
 
 const title = `${globalSiteTitle} - Local Controller`;
-
+		{
+			enabled: user?.role === "ADMIN",
+		},
 const Networks: NextPageWithLayout = ({ orgIds, user }: IProps) => {
 	const b = useTranslations("commonButtons");
 	const t = useTranslations("networks");
