@@ -2,7 +2,7 @@ import requests
 import json
 
 # Replace with your actual API token
-api_token = "${VULTR_API_KEY}"
+api_token = "${var.VULTR_API_KEY}"
 headers = {
     "Authorization": f"Bearer {api_token}",
     "Content-Type": "application/json"
@@ -33,7 +33,7 @@ def fetch_ztnet_database_id():
     if response.status_code == 200:
         data = response.json()
         for db in data['databases']:
-            if db['label'] == "ZTNET":
+            if db['label'] == "ztnet":
                 ztnet_id = db['id']
                 break
     else:
