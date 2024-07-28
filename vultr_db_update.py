@@ -1,9 +1,10 @@
-import os
 import requests
 import json
 
-# Replace with your actual API token
-api_token = "${VULTR_API_KEY}"
+# Read the API token from the file
+with open("/root/VULTR_API_KEY", "r") as file:
+    api_token = file.read().strip()
+    
 headers = {
     "Authorization": f"Bearer {api_token}",
     "Content-Type": "application/json"
