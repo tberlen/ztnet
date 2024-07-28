@@ -2,7 +2,7 @@ import requests
 import json
 
 # Replace with your actual API token
-api_token = "${var.VULTR_API_KEY}"
+api_token = "${VULTR_API_KEY}"
 headers = {
     "Authorization": f"Bearer {api_token}",
     "Content-Type": "application/json"
