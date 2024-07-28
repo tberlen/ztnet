@@ -35,7 +35,7 @@ def fetch_ztnet_database_id():
     if response.status_code == 200:
         data = response.json()
         for db in data['databases']:
-            if db['label'] == "ztnet":
+            if db['label'] == "ztnet_general":
                 ztnet_id = db['id']
                 break
     else:
@@ -43,7 +43,7 @@ def fetch_ztnet_database_id():
 
     return ztnet_id, response.status_code
 
-# Function to update trusted IPs for ZTNET database
+# Function to update trusted IPs for ztnet_general database
 def update_trusted_ips(database_id, trusted_ips):
     api_url = f"https://api.vultr.com/v2/databases/{database_id}"
     update_data = {
@@ -69,14 +69,14 @@ def main():
         print("No controller IPs found or failed to fetch instances.")
         return
 
-    # Step 2: Fetch ZTNET database ID
+    # Step 2: Fetch ztnet_general database ID
     ztnet_id, status_code = fetch_ztnet_database_id()
 
     if status_code != 200 or not ztnet_id:
-        print("Database with label 'ZTNET' not found or failed to fetch databases.")
+        print("Database with label 'ztnet_general' not found or failed to fetch databases.")
         return
 
-    # Step 3: Update trusted IPs for ZTNET database
+    # Step 3: Update trusted IPs for ztnet_general database
     update_trusted_ips(ztnet_id, controller_ips)
 
 # Run the main function
