@@ -1,0 +1,61 @@
+services:
+  zerotier:
+    image: zyclonite/zerotier:1.14.0
+    hostname: zerotier
+    container_name: zerotier
+    restart: unless-stopped
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    networks:
+      - app-network
+    ports:
+      - "9993:9993/udp"
+    environment:
+      - ZT_OVERRIDE_LOCAL_CONF=true
+      - ZT_ALLOW_MANAGEMENT_FROM=172.31.255.0/29
+
+  ztnet:
+    image: tberlen/ztnet:seed
+    container_name: ztnet
+    working_dir: /app
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    environment:
+      ZT_SECRET: ztsecret
+      POSTGRES_HOST: posthost
+      POSTGRES_PORT: postport
+      POSTGRES_USER: postgresuser
+      POSTGRES_PASSWORD: postgrespass
+      POSTGRES_DB: postgresdb
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "random_secret"
+      NEXTAUTH_URL_INTERNAL: "http://ztnet:3000"
+      OAUTH_ID: "oauthid"
+      OAUTH_SECRET: "oauthsecret"
+      OAUTH_ACCESS_TOKEN_URL: "oauthaccesstokenurl"
+      OAUTH_AUTHORIZATION_URL: "oauthauthorizationurl"
+      OAUTH_USER_INFO: "oauthuserinfo"
+      OAUTH_WELLKNOWN: "oauthwellknown"
+    networks:
+      - app-network
+    depends_on:
+      - zerotier
+
+volumes:
+  zerotier:
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.255.0/29
