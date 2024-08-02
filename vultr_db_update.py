@@ -3,7 +3,7 @@ import json
 import os
 
 # Read the API token from the file
-api_key_file = "/root/VULTR_API_KEY"
+api_key_file = "${VULTR_API_KEY}"
 with open(api_key_file, "r") as file:
     api_token = file.read().strip()
 
