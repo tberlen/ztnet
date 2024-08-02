@@ -1,8 +1,13 @@
 import requests
 import json
+import os
 
-# Replace with your actual API token
-api_token = "${VULTR_API_KEY}"
+# Fetch API token from environment variable
+api_token = os.getenv("VULTR_API_KEY")
+
+if not api_token:
+    raise ValueError("No VULTR_API_KEY environment variable set.")
+
 headers = {
     "Authorization": f"Bearer {api_token}",
     "Content-Type": "application/json"
