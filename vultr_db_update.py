@@ -35,9 +35,14 @@ def fetch_ztnet_database_id():
     response = requests.get(api_url, headers=headers)
     ztnet_id = None
 
+    print(f"Response status code: {response.status_code}")
+    print(f"Response text: {response.text}")
+
     if response.status_code == 200:
         data = response.json()
+        print(f"Databases: {data['databases']}")
         for db in data['databases']:
+            print(f"Checking database: {db['label']}")
             if db['label'].lower() == "ztnet":  # Ensure label check is case-insensitive
                 ztnet_id = db['id']
                 break
