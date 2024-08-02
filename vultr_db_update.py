@@ -43,7 +43,7 @@ def fetch_ztnet_database_id():
         print(f"Databases: {data['databases']}")
         for db in data['databases']:
             print(f"Checking database: {db['label']}")
-            if db['label'].lower() == "ztnet":  # Ensure label check is case-insensitive
+            if db['label'].lower() == "ztnet_general":  # Ensure label check is case-insensitive
                 ztnet_id = db['id']
                 break
     else:
@@ -81,7 +81,7 @@ def main():
     ztnet_id, status_code = fetch_ztnet_database_id()
 
     if status_code != 200 or not ztnet_id:
-        print("Database with label 'ZTNET' not found or failed to fetch databases.")
+        print("Database with label 'ZTNET_GENERAL' not found or failed to fetch databases.")
         return
 
     # Step 3: Update trusted IPs for ZTNET database
