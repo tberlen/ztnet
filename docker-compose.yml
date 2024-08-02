@@ -29,7 +29,6 @@ services:
     ports:
       - 3000:3000
     environment:
-      ZT_SECRET: ztsecret
       POSTGRES_HOST: posthost
       POSTGRES_PORT: postport
       POSTGRES_USER: postgresuser
