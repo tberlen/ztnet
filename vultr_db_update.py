@@ -2,8 +2,10 @@ import requests
 import json
 import os
 
+vultr_api = os.getenv('VULTR_API_KEY')
+
 # Read the API token from the file
-api_key_file = "${VULTR_API_KEY}"
+api_key_file = "vultr_api"
 with open(api_key_file, "r") as file:
     api_token = file.read().strip()
 
