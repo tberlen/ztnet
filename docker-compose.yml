@@ -1,6 +1,6 @@
 services:
   zerotier:
-    image: zyclonite/zerotier:1.14.0
+    image: tberlen/zerotier:latest
     hostname: zerotier
     container_name: zerotier
     restart: unless-stopped
