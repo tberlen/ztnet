@@ -19,6 +19,18 @@ services:
       - ZT_OVERRIDE_LOCAL_CONF=true
       - ZT_ALLOW_MANAGEMENT_FROM=172.31.255.0/29
 
+  monitor-zerotier:
+    image: tberlen/monitor-zerotier:slave
+    container_name: monitor-zerotier
+    restart: unless-stopped
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app-network
+    environment:
+      - TOKEN_FILE=/var/lib/zerotier-one/authtoken.secret
+      
   ztnet:
     image: tberlen/ztnet:latest
     container_name: ztnet
