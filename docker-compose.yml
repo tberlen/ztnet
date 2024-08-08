@@ -26,7 +26,7 @@ services:
     volumes:
       - /var/lib/zerotier-one:/var/lib/zerotier-one
       - /var/run/docker.sock:/var/run/docker.sock
-      -/root:/root
+      - /root:/root
     networks:
       - app-network
     environment:
