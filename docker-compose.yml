@@ -18,7 +18,13 @@ services:
     environment:
       - ZT_OVERRIDE_LOCAL_CONF=true
       - ZT_ALLOW_MANAGEMENT_FROM=172.31.255.0/29
-
+    healthcheck:
+      test: ["CMD-SHELL", "zerotier-cli info"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+      
   monitor-zerotier:
     image: tberlen/monitor-zerotier:slave
     container_name: monitor-zerotier
@@ -32,7 +38,11 @@ services:
       - app-network
     environment:
       - TOKEN_FILE=/var/lib/zerotier-one/authtoken.secret
-      
+    depends_on:
+      zerotier:
+        condition: service_healthy
+        restart: true
+
   ztnet:
     image: tberlen/ztnet:latest
     container_name: ztnet
