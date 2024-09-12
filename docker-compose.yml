@@ -24,7 +24,14 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
-      
+    logging:
+      driver: loki
+      options:
+        loki-url: "lokiurl"
+        loki-external-labels: >
+          container_name="{{.Name}}",
+          region="lokiregion"
+          
   monitor-zerotier:
     image: tberlen/monitor-zerotier:slave
     container_name: monitor-zerotier
@@ -42,7 +49,14 @@ services:
       zerotier:
         condition: service_healthy
         restart: true
-
+    logging:
+      driver: loki
+      options:
+        loki-url: "lokiurl"
+        loki-external-labels: >
+          container_name="{{.Name}}",
+          region="lokiregion"
+        
   ztnet:
     image: tberlen/ztnet:latest
     container_name: ztnet
@@ -71,7 +85,14 @@ services:
       - app-network
     depends_on:
       - zerotier
-
+    logging:
+      driver: loki
+      options:
+        loki-url: "lokiurl"
+        loki-external-labels: >
+          container_name="{{.Name}}",
+          region="lokiregion"
+          
 volumes:
   zerotier:
 
