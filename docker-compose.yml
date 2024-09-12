@@ -28,9 +28,7 @@ services:
       driver: loki
       options:
         loki-url: "lokiurl"
-        loki-external-labels: >
-          container_name="{{.Name}}",
-          region="lokiregion"
+        loki-external-labels: "container_name={{.Name}},region=lokiregion"
           
   monitor-zerotier:
     image: tberlen/monitor-zerotier:slave
