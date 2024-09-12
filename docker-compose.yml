@@ -51,9 +51,7 @@ services:
       driver: loki
       options:
         loki-url: "lokiurl"
-        loki-external-labels: >
-          container_name="{{.Name}}",
-          region="lokiregion"
+        loki-external-labels: "container_name={{.Name}},region=lokiregion"
         
   ztnet:
     image: tberlen/ztnet:latest
@@ -87,9 +85,7 @@ services:
       driver: loki
       options:
         loki-url: "lokiurl"
-        loki-external-labels: >
-          container_name="{{.Name}}",
-          region="lokiregion"
+        loki-external-labels: "container_name={{.Name}},region=lokiregion"
           
 volumes:
   zerotier:
