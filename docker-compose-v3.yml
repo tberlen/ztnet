@@ -13,7 +13,7 @@ services:
       - app-network
       
   zerotier:
-    image: tberlen/zerotier:latest
+    image: zyclonite/zerotier:1.14.0
     hostname: zerotier
     container_name: zerotier
     restart: unless-stopped
