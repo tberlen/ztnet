@@ -59,6 +59,7 @@ services:
           
 volumes:
   zerotier:
+  postgres-data:
 
 networks:
   app-network:
