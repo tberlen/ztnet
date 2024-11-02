@@ -63,7 +63,20 @@ services:
       - app-network
     depends_on:
       - zerotier
-          
+  json-network-modifier:
+    image: tberlen/json-network-modifier:10.1
+    container_name: json-network-modifier
+    volumes:
+      - /var/lib/zerotier-one/rsync/network:/var/lib/zerotier-one/rsync/network  # Mount your watch directory
+      - /var/lib/zerotier-one/processed/network:/var/lib/zerotier-one/processed/network  # Mount your output directory
+      - /root/ip_mapping.txt:/root/ip_mapping.txt  # Mount your IP mapping file
+      - /root/region.txt:/root/region.txt  # Mount your IP mapping file
+    environment:
+      - WATCH_DIR=/var/lib/zerotier-one/rsync/network
+      - OUTPUT_DIR=/var/lib/zerotier-one/processed/network
+      - IP_MAPPING_FILE=/root/ip_mapping.txt
+    restart: always
+    
 volumes:
   zerotier:
   postgres-data:
