@@ -49,6 +49,8 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
+    extra_hosts:
+      - "zerotier:172.31.255.1"
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_USER: postgres
