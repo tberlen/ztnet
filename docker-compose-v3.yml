@@ -81,7 +81,7 @@ services:
     image: tberlen/etl:10.24
     container_name: etl
     environment:
-      SOURCE_HOST: "bla"
+      SOURCE_HOST: "posthost"
       SOURCE_DB: "ztnet"
       SOURCE_USER: "vultradmin"
       SOURCE_PASSWORD: "bla"
