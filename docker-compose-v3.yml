@@ -63,6 +63,7 @@ services:
       - app-network
     depends_on:
       - zerotier
+      
   json-network-modifier:
     image: tberlen/json-network-modifier:10.1
     container_name: json-network-modifier
@@ -76,7 +77,25 @@ services:
       - OUTPUT_DIR=/var/lib/zerotier-one/processed/network
       - IP_MAPPING_FILE=/root/ip_mapping.txt
     restart: always
-    
+  etl:
+    image: tberlen/etl:10.24
+    container_name: etl
+    environment:
+      SOURCE_HOST: "bla"
+      SOURCE_DB: "ztnet"
+      SOURCE_USER: "vultradmin"
+      SOURCE_PASSWORD: "bla"
+      SOURCE_PORT: "16751"
+      TARGET_HOST: "postgres"
+      TARGET_DB: "ztnet"
+      TARGET_USER: "postgres"
+      TARGET_PASSWORD: "postgrespass"
+      TARGET_PORT: "5432"
+    depends_on:
+      - postgres
+    networks:
+      - app-network  
+      
 volumes:
   zerotier:
   postgres-data:
