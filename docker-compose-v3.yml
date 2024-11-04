@@ -63,19 +63,43 @@ services:
       - app-network
     depends_on:
       - zerotier
-      
+  ip_mapping_monitor:
+    image: tberlen/ip_mapping:latest
+    container_name: ip_mapping_monitor
+    restart: unless-stopped
+    environment:
+      - REGION_FILE=/root/region.txt
+      - IP_MAPPING_FILE=/root/ip_mapping.txt
+      - OUTPUT_FILE=/root/filtered_ip_mapping.txt
+      - SOURCE_URL=https://www/ip_mapping.txt  # Replace with your URL
+      - CHECKSUM_FILE=/root/ip_mapping_checksum
+    volumes:
+      - /root//region.txt:/root/region.txt
+      - /root:/root  # Map output directory to view filtered IPs locally
+  
   network-modifier:
     image: tberlen/network-modifier:latest
-    container_name: network-modifier 
+    container_name: network-modifier
     volumes:
       - /var/lib/zerotier-one/rsync/network:/var/lib/zerotier-one/rsync/network  # Mount your watch directory
       - /var/lib/zerotier-one/processed/network:/var/lib/zerotier-one/processed/network  # Mount your output directory
-      - /root/ip_mapping.txt:/root/ip_mapping.txt  # Mount your IP mapping file
+      - /root/filtered_ip_mapping.txt:/root/filtered_ip_mapping.txt  # Mount your IP mapping file
       - /root/region.txt:/root/region.txt  # Mount your IP mapping file
     environment:
       - WATCH_DIR=/var/lib/zerotier-one/rsync/network
       - OUTPUT_DIR=/var/lib/zerotier-one/processed/network
       - IP_MAPPING_FILE=/root/ip_mapping.txt
+    restart: always
+
+  client-modifier:
+    image: tberlen/client-modifier:latest
+    container_name: client-modifier
+    volumes:
+      - /var/lib/zerotier-one/rsync:/var/lib/zerotier-one/rsync  # Mount your watch directory
+      - /var/lib/zerotier-one/processed:/var/lib/zerotier-one/processed  # Mount your output directory
+    environment:
+      WATCHED_DIR: "/var/lib/zerotier-one/rsync"
+      PROCESSED_DIR: "/var/lib/zerotier-one/processed"
     restart: always
 
   client-modifier:
