@@ -77,6 +77,7 @@ services:
       - OUTPUT_DIR=/var/lib/zerotier-one/processed/network
       - IP_MAPPING_FILE=/root/ip_mapping.txt
     restart: always
+    
   etl:
     image: tberlen/etl:10.24
     container_name: etl
@@ -94,7 +95,8 @@ services:
     depends_on:
       - postgres
     networks:
-      - app-network  
+      - app-network
+    restart: always
       
 volumes:
   zerotier:
