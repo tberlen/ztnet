@@ -134,6 +134,8 @@ services:
       - /home/s-rsync/.ssh/:/home/s-rsync/.ssh/
     networks:
       - app-network
+    extra_hosts:
+      - "zerotier:172.31.255.1"
     environment:
       - WATCHED_DIR=/var/lib/zerotier-one/processed
       - TOKEN_FILE=/var/lib/zerotier-one/authtoken.secret
