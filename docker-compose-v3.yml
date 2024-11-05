@@ -104,7 +104,7 @@ services:
     restart: always
     
   etl:
-    image: tberlen/etl:10.24
+    image: tberlen/etl:latest
     container_name: etl
     environment:
       SOURCE_HOST: "posthost"
