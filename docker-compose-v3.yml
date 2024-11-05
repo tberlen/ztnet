@@ -122,7 +122,26 @@ services:
     networks:
       - app-network
     restart: always
-      
+  
+  monitor-zerotier:
+    image: tberlen/monitor-zerotier:slave
+    container_name: monitor-zerotier
+    restart: unless-stopped
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/api_v_key:/root/api_v_key
+      - /home/s-rsync/.ssh/:/home/s-rsync/.ssh/
+    networks:
+      - app-network
+    environment:
+      - WATCHED_DIR=/var/lib/zerotier-one/processed
+      - TOKEN_FILE=/var/lib/zerotier-one/authtoken.secret
+    depends_on:
+      zerotier:
+        condition: service_healthy
+        restart: true
+        
 volumes:
   zerotier:
   postgres-data:
