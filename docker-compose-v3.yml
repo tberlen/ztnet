@@ -107,6 +107,7 @@ services:
     image: tberlen/etl:latest
     container_name: etl
     environment:
+      - REGION_FILE_PATH=/root/region.txt
       SOURCE_HOST: "posthost"
       SOURCE_DB: "ztnet"
       SOURCE_USER: "vultradmin"
