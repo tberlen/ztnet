@@ -89,7 +89,7 @@ services:
     environment:
       - WATCH_DIR=/var/lib/zerotier-one/rsync/network
       - OUTPUT_DIR=/var/lib/zerotier-one/processed/network
-      - IP_MAPPING_FILE=/root/ip_mapping.txt
+      - IP_MAPPING_FILE=/root/filtered_ip_mapping.txt
     restart: always
 
   client-modifier:
