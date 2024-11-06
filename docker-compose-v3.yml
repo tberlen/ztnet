@@ -124,7 +124,7 @@ services:
     restart: always
   
   monitor-zerotier:
-    image: tberlen/monitor-zerotier:slave
+    image: tberlen/monitor-zerotier:11.3
     container_name: monitor-zerotier
     restart: unless-stopped
     volumes:
