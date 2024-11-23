@@ -1,0 +1,26 @@
+services:
+  zerotier:
+    image: zyclonite/zerotier:1.14.0
+    hostname: zerotier
+    container_name: zerotier
+    restart: unless-stopped
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    network_mode: host
+    environment:
+      - ZT_OVERRIDE_LOCAL_CONF=true
+      - ZT_ALLOW_MANAGEMENT_FROM=192.168.55.0/28
+    healthcheck:
+      test: ["CMD-SHELL", "zerotier-cli info"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+         
+volumes:
+  zerotier:
