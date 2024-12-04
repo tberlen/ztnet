@@ -14,7 +14,7 @@ services:
     network_mode: host
     environment:
       - ZT_OVERRIDE_LOCAL_CONF=true
-      - ZT_ALLOW_MANAGEMENT_FROM=192.168.55.0/28
+      - ZT_ALLOW_MANAGEMENT_FROM=192.168.200.0/28
     healthcheck:
       test: ["CMD-SHELL", "zerotier-cli info"]
       interval: 10s
