@@ -1,0 +1,157 @@
+services:
+  postgres:
+    image: postgres:15.2-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespass
+      POSTGRES_DB: ztnet
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+      
+  zerotier:
+    image: zyclonite/zerotier:1.14.0
+    hostname: zerotier
+    container_name: zerotier
+    restart: unless-stopped
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    network_mode: host
+    environment:
+      - ZT_OVERRIDE_LOCAL_CONF=true
+      - ZT_ALLOW_MANAGEMENT_FROM=172.31.255.0/28
+    healthcheck:
+      test: ["CMD-SHELL", "zerotier-cli info"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+          
+  ztnet:
+    image: tberlen/ztnet:latest
+    container_name: ztnet
+    working_dir: /app
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    extra_hosts:
+      - "zerotier:172.31.255.1"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespass
+      POSTGRES_DB: ztnet
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "random_secret"
+      NEXTAUTH_URL_INTERNAL: "http://ztnet:3000"
+    networks:
+      - app-network
+    depends_on:
+      - zerotier
+      
+  ip_mapping_monitor:
+    image: tberlen/ip_mapping:latest
+    container_name: ip_mapping_monitor
+    restart: unless-stopped
+    environment:
+      - REGION_FILE=/root/region.txt
+      - IP_MAPPING_FILE=/root/ip_mapping.txt
+      - OUTPUT_FILE=/root/filtered_ip_mapping.txt
+      - SOURCE_URL=https://www/ip_mapping.txt  # Replace with your URL
+      - CHECKSUM_FILE=/root/ip_mapping_checksum
+    volumes:
+      - /root//region.txt:/root/region.txt
+      - /root:/root  # Map output directory to view filtered IPs locally
+  
+  network-modifier:
+    image: tberlen/network-modifier:latest
+    container_name: network-modifier
+    volumes:
+      - /var/lib/zerotier-one/rsync/network:/var/lib/zerotier-one/rsync/network  # Mount your watch directory
+      - /var/lib/zerotier-one/processed/network:/var/lib/zerotier-one/processed/network  # Mount your output directory
+      - /root/filtered_ip_mapping.txt:/root/filtered_ip_mapping.txt  # Mount your IP mapping file
+      - /root/region.txt:/root/region.txt  # Mount your IP mapping file
+    environment:
+      - WATCH_DIR=/var/lib/zerotier-one/rsync/network
+      - OUTPUT_DIR=/var/lib/zerotier-one/processed/network
+      - IP_MAPPING_FILE=/root/filtered_ip_mapping.txt
+    restart: always
+
+  client-modifier:
+    image: tberlen/client-modifier:latest
+    container_name: client-modifier
+    volumes:
+      - /var/lib/zerotier-one/rsync:/var/lib/zerotier-one/rsync  # Mount your watch directory
+      - /var/lib/zerotier-one/processed:/var/lib/zerotier-one/processed  # Mount your output directory
+    environment:
+      WATCHED_DIR: "/var/lib/zerotier-one/rsync"
+      PROCESSED_DIR: "/var/lib/zerotier-one/processed"
+    restart: always
+    
+  etl:
+    image: tberlen/etl:latest
+    container_name: etl
+    environment:
+      SOURCE_HOST: "posthost"
+      SOURCE_DB: "ztnet"
+      SOURCE_USER: "vultradmin"
+      SOURCE_PASSWORD: "bla"
+      SOURCE_PORT: "16751"
+      TARGET_HOST: "postgres"
+      TARGET_DB: "ztnet"
+      TARGET_USER: "postgres"
+      TARGET_PASSWORD: "postgrespass"
+      TARGET_PORT: "5432"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    restart: always
+  
+  monitor-zerotier:
+    image: tberlen/monitor-zerotier:11.11
+    container_name: monitor-zerotier
+    restart: unless-stopped
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/api_v_key:/root/api_v_key
+      - /home/s-rsync/.ssh/:/home/s-rsync/.ssh/
+    networks:
+      - app-network
+    extra_hosts:
+      - "zerotier:172.31.255.1"
+    environment:
+      - WATCHED_DIR=/var/lib/zerotier-one/processed
+      - TOKEN_FILE=/var/lib/zerotier-one/authtoken.secret
+    depends_on:
+      zerotier:
+        condition: service_healthy
+        restart: true
+        
+volumes:
+  zerotier:
+  postgres-data:
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.255.0/28
