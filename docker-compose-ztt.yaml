@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgres:15.2-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespass
+      POSTGRES_DB: ztnet
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+      
+  zerotier:
+    image: zyclonite/zerotier:1.14.0
+    hostname: zerotier
+    container_name: zerotier
+    restart: unless-stopped
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    network_mode: host
+    environment:
+      - ZT_OVERRIDE_LOCAL_CONF=true
+      - ZT_ALLOW_MANAGEMENT_FROM=172.31.255.0/28
+    healthcheck:
+      test: ["CMD-SHELL", "zerotier-cli info"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+          
+  ztnet:
+    image: tberlen/ztnet:latest
+    container_name: ztnet
+    working_dir: /app
+    volumes:
+      - /var/lib/zerotier-one:/var/lib/zerotier-one
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    extra_hosts:
+      - "zerotier:172.31.255.1"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespass
+      POSTGRES_DB: ztnet
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "random_secret"
+      NEXTAUTH_URL_INTERNAL: "http://ztnet:3000"
+    networks:
+      - app-network
+    depends_on:
+      - zerotier
+
+volumes:
+  zerotier:
+  postgres-data:
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.255.0/28
