@@ -41,7 +41,7 @@ services:
       timeout: 10s
           
   ztnet:
-    image: tberlen/ztnet:latest
+    image: sinamics/ztnet:latest
     container_name: ztnet
     working_dir: /app
     volumes:
